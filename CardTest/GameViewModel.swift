@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct pPlayer {
+struct GamePlayer {
     let name: String
     let id: UUID
     var isOut: Bool
@@ -16,21 +16,30 @@ struct pPlayer {
     var isHost: Bool
 }
 
-let player1: pPlayer = pPlayer(name: "Ben", id: UUID(), isOut: false, isSafe: true, isHost: false)
-let player2: pPlayer = pPlayer(name: "Josh", id: UUID(), isOut: true, isSafe: false, isHost: false)
-let player3: pPlayer = pPlayer(name: "Caleb", id: UUID(), isOut: false, isSafe: false, isHost: false)
-let player4: pPlayer = pPlayer(name: "John", id: UUID(), isOut: false, isSafe: false, isHost: false)
+let player1: GamePlayer = GamePlayer(name: "Ben", id: UUID(), isOut: false, isSafe: true, isHost: false)
+let player2: GamePlayer = GamePlayer(name: "Josh", id: UUID(), isOut: true, isSafe: false, isHost: false)
+let player3: GamePlayer = GamePlayer(name: "Caleb", id: UUID(), isOut: false, isSafe: false, isHost: false)
+let player4: GamePlayer = GamePlayer(name: "John", id: UUID(), isOut: false, isSafe: false, isHost: false)
 
-let testPlayers: [pPlayer] = [player1, player2, player3, player4]
+let testPlayers: [GamePlayer] = [player1, player2, player3, player4]
 
 enum HandType {
     case holding, discard
 }
 
 // A representation of a playing card
-struct Card: Identifiable, Equatable {
+class Card: ObservableObject, Identifiable, Equatable {
+    static func == (lhs: Card, rhs: Card) -> Bool {
+        return lhs.id == rhs.id
+    }
     let id = UUID()
     let number: Int
+    var name: String = ""
+    var description: String = ""
+    @Published var faceDown: Bool = true
+    init(number: Int) {
+        self.number = number
+    }
 }
 
 // A representation of a player's hand of cards
@@ -61,7 +70,7 @@ class GameState: ObservableObject {
         
         self.deck.cards = (1...20).map { Card(number: $0) }.shuffled()
     }
-
+    
     
     func getPlayer(from id: UUID) -> Player? {
         return players.first(where: {
@@ -100,6 +109,10 @@ class GameState: ObservableObject {
             }
             hand.cards.remove(at: index)
             pile.cards.append(card)
+        } completion: {
+            withAnimation {
+                card.faceDown = false
+            }
         }
     }
     
@@ -117,13 +130,13 @@ class GameState: ObservableObject {
                     dealNextPlayer(index: index + 1)
                 }
             }
-            
             dealNextPlayer(index: 0)
         }
         
         withAnimation {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 * Double(players.count)) {
                 let cardToDeal = Card(number: Int.random(in: 0...15))
+                cardToDeal.faceDown = false
                 let hand = self.me!.getHand(type: .holding)
                 self.dealCard(to: hand, card: cardToDeal)
             }
@@ -187,15 +200,40 @@ class GameState: ObservableObject {
         cardToShow = card
         showCard = true
     }
+    
+    func getPlayerOptions(for card: Int) -> [String] {
+        // choose player: 1, 2, 3, 5, 6: you can only choose yourself on troll
+        var options = [String]()
+        for player in players {
+            if !player.isSafe || !player.isOut {
+                options.append(player.name)
+            }
+        }
+        if card == 5 || options.count == 0 {
+            options.append(me!.name)
+        }
+        return options
+    }
+    
+    func getCardOptions(for power: Int) -> [String] {
+        // choose for 1, can be any but 1
+        return ["Maul Rat", "Duck of Doom", "Wishing Ring", "Net Troll", "Dread Gazebo", "Turbonium Dragon", "Loot"]
+    }
 }
 
 
 class Player: ObservableObject, Identifiable {
     let id = UUID()
-    var hands = [Hand(), Hand()]
-    @Published var gamePlayer: pPlayer
-    init(from player: pPlayer) {
-        gamePlayer = player
+    @Published var hands = [Hand(), Hand()]
+    @Published var name: String
+    @Published var isOut: Bool
+    @Published var isSafe: Bool
+    @Published var playerId: UUID
+    init(from player: GamePlayer) {
+        self.name = player.name
+        self.isOut = player.isOut
+        self.isSafe = player.isSafe
+        self.playerId = player.id
     }
     func getHand(type: HandType) -> Hand {
         switch type {
@@ -205,10 +243,9 @@ class Player: ObservableObject, Identifiable {
             return hands[0]
         }
     }
-    func updatePlayer(with p: pPlayer) {
-        gamePlayer.isOut = p.isOut
-        gamePlayer.isSafe = p.isSafe
-        self.objectWillChange.send()
+    func updatePlayer(with p: GamePlayer) {
+        self.isOut = p.isOut
+        self.isSafe = p.isSafe
     }
 }
 

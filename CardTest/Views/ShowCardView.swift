@@ -19,7 +19,7 @@ struct ShowCardView: View {
                 .zIndex(1.0)
             VStack(alignment: .leading) {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 10)
+                    RoundedRectangle(cornerRadius: 35)
                         .foregroundStyle(Color.green)
                     VStack {
                         Text(String(cardToShow.number))
@@ -37,7 +37,7 @@ struct ShowCardView: View {
             .foregroundStyle(Color.black)
             .zIndex(2.0)
             .frame(width: 250, height: 400)
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke())
+            .overlay(RoundedRectangle(cornerRadius: 35).stroke())
             .onAppear {
                 withAnimation(.spring()) {
                     offset = 0

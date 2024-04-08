@@ -13,29 +13,38 @@ public enum CardSize {
 
 struct CardView: View {
     
-    let card: Card
+    @ObservedObject var card: Card
+    @Namespace var ns
     let namespace: Namespace.ID
     let size: CardSize
     
     var body: some View {
         let w: CGFloat = size == .small ? 60 : 80
         let h: CGFloat = size == .small ? 90 : 110
+        let color = card.faceDown ? Color.red : Color.green
         
         ZStack {
-            RoundedRectangle(cornerRadius: 20,
-                             style: .continuous)
-            .fill(Color.green)
-            RoundedRectangle(cornerRadius: 20,
-                             style: .continuous)
-            .stroke(.black, lineWidth: 2)
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(color)
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke())
             
-            Text("\(card.number)")
+            buildCard()
         }
         .frame(width: w, height: h)
         .matchedGeometryEffect(id: card.id, in: namespace, properties: .frame, anchor: .center)
         .transition(.scale(scale: 1))
+        .rotation3DEffect(.degrees(card.faceDown ? 180 : 0), axis: (x: 0, y: 1, z: 0))
     }
     
+    @ViewBuilder
+    private func buildCard() -> some View {
+        if card.faceDown {
+            Text("Loot")
+                .rotation3DEffect(Angle(degrees: 180), axis: (x: 0, y: 1, z: 0))
+        } else {
+            Text(String(card.number))
+        }
+    }
 }
 
 struct CardView_Previews: PreviewProvider {

@@ -10,7 +10,7 @@ import SwiftUI
 struct HandView: View {
    
     @ObservedObject var hand: Hand
-    var player: pPlayer?
+    @ObservedObject var player: Player
     var isMe: Bool = false
     let namespace: Namespace.ID
     let onCardTap: (Card) -> Void
@@ -26,14 +26,12 @@ struct HandView: View {
     
     @ViewBuilder
     private func getPlayerStatus() -> some View {
-        if let player = player {
-            if player.isOut {
-                Image(systemName: "xmark")
-                    .foregroundStyle(Color.red)
-            } else if player.isSafe {
-                Image(systemName: "shield.fill")
-                    .foregroundStyle(Color.blue)
-            }
+        if player.isOut {
+            Image(systemName: "xmark")
+                .foregroundStyle(Color.red)
+        } else if player.isSafe {
+            Image(systemName: "shield.fill")
+                .foregroundStyle(Color.blue)
         }
         EmptyView()
     }
@@ -42,7 +40,7 @@ struct HandView: View {
         switch cardSize {
         case .small:
             VStack {
-                Text(player!.name)
+                Text(player.name)
                     .overlay(getPlayerStatus().offset(x: -50))
                 HStack(spacing: -25) {
                     ForEach(hand.cards) { card in
@@ -119,7 +117,7 @@ struct HandView_Previews: PreviewProvider {
         }
         
         var body: some View {
-            HandView(hand: hand, player: player1, namespace: namespace, onCardTap: { _ in }, cardSize: .small)
+            HandView(hand: hand, player: Player(from: player1), namespace: namespace, onCardTap: { _ in }, cardSize: .small)
         }
     }
     

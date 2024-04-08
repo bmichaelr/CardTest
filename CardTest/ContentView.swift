@@ -20,6 +20,9 @@ struct ContentView: View {
                     Button("Clean") {
                         gameState.cleanUpCards()
                     }
+                    Button("Update") {
+                        changeStatus()
+                    }
                     Spacer()
                     VStack {
                         DeckView(deck: gameState.deck,
@@ -47,7 +50,7 @@ struct ContentView: View {
         HStack {
             VStack {
                 HandView(hand: player.getHand(type: .holding),
-                         player: player.gamePlayer,
+                         player: player,
                          namespace: animation,
                          onCardTap: {
                     gameState.discard(card: $0, from: player.getHand(type: .holding), to: player.getHand(type: .discard))
@@ -55,6 +58,7 @@ struct ContentView: View {
             }
             VStack {
                 HandView(hand: player.getHand(type: .discard),
+                         player: player,
                          namespace: animation,
                          onCardTap: { gameState.showCard(card: $0)},
                          cardSize: .large)
@@ -68,13 +72,14 @@ struct ContentView: View {
     private func buildMyPlayingView(from player: Player) -> some View {
         VStack {
             HandView(hand: player.getHand(type: .discard),
-                    player: player.gamePlayer,
+                    player: player,
                     isMe: true,
                     namespace: animation,
                     onCardTap: { gameState.remove(card: $0, from: player.getHand(type: .discard))},
                     cardSize: .small)
             HandView(
-                hand: player.getHand(type: .holding),
+                hand: player.getHand(type: .holding), 
+                player: player,
                 isMe: true,
                 namespace: animation,
                 onCardTap: {
@@ -87,31 +92,16 @@ struct ContentView: View {
         .padding(.leading, 10)
     }
     
-    @ViewBuilder
-    private func buildMyView(from player: Player) -> some View {
-        EmptyView()
-    }
-    
     // MARK: Private functions
     private func changeStatus() {
-        let len = gameState.players.count
-        let randIndex = Int.random(in: 0..<len)
-        let player = gameState.players[randIndex]
-        var underlying = player.gamePlayer
-        if Bool.random() {
-            if Bool.random() {
-                underlying.isSafe = false
-                underlying.isOut = true
-            } else {
-                underlying.isOut = false
-                underlying.isSafe = true
-            }
+        let thingToChange = Bool.random()
+        if thingToChange {
+            gameState.players.first!.isOut = false
+            gameState.players.first!.isSafe = true
         } else {
-            underlying.isSafe = false
-            underlying.isOut = false
+            gameState.players.first!.isSafe = false
+            gameState.players.first!.isOut = true
         }
-        player.objectWillChange.send()
-        player.updatePlayer(with: underlying)
     }
 }
 
