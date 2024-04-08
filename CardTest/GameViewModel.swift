@@ -202,7 +202,6 @@ class GameState: ObservableObject {
     }
     
     func getPlayerOptions(for card: Int) -> [String] {
-        // choose player: 1, 2, 3, 5, 6: you can only choose yourself on troll
         var options = [String]()
         for player in players {
             if !player.isSafe || !player.isOut {
@@ -216,8 +215,12 @@ class GameState: ObservableObject {
     }
     
     func getCardOptions(for power: Int) -> [String] {
-        // choose for 1, can be any but 1
         return ["Maul Rat", "Duck of Doom", "Wishing Ring", "Net Troll", "Dread Gazebo", "Turbonium Dragon", "Loot"]
+    }
+    
+    func playCard(player: String?, card: String?) {
+        print("Chosen player: \(player ?? "No Player Selected!"), Chose card: \(card ?? "No Card Chosen")")
+        
     }
 }
 

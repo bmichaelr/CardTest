@@ -12,7 +12,7 @@ struct PlayCardView: View {
     @Binding var isShowing: Bool
     @State private var offset: CGFloat = 1000
     @State private var opacity: CGFloat = 0.0
-    @State private var playing: Bool = true
+    @State private var playing: Bool = false
     @State private var pickedPlayer: String = ""
     @State private var pickedCard: String = ""
     @Namespace var ns
@@ -30,16 +30,13 @@ struct PlayCardView: View {
                     buildCardView()
                         .matchedGeometryEffect(id: "card", in: ns)
                     Button("Play Card") {
-                        print("Playing this card")
+                        withAnimation {
+                            playing.toggle()
+                        }
                     }
                 } else {
                     buildPlayingView()
                         .matchedGeometryEffect(id: "card", in: ns)
-                }
-                Button("Toggle") {
-                    withAnimation {
-                        playing.toggle()
-                    }
                 }
             }
             .foregroundStyle(Color.black)
@@ -92,6 +89,7 @@ struct PlayCardView: View {
     @ViewBuilder
     private func buildPlayingView() -> some View {
         let width = UIScreen.main.bounds.width - 40
+        let height = getHeight()
         ZStack {
             RoundedRectangle(cornerRadius: 30)
                 .foregroundStyle(Color.green)
@@ -110,13 +108,19 @@ struct PlayCardView: View {
                     }
                     Spacer()
                     Button("Play") {
-                        
+                        if cardNotAbleToBePlayed() { return }
+                        gameState.playCard(player: pickedPlayer, card: pickedCard)
+                        withAnimation {
+                            playing = false
+                        } completion: {
+                            close()
+                        }
                     }
                 }
             }
             .padding()
         }
-        .frame(width: width, height: 250)
+        .frame(width: width, height: height)
         .overlay(RoundedRectangle(cornerRadius: 30).stroke())
     }
     
@@ -125,21 +129,21 @@ struct PlayCardView: View {
         switch cardToShow.number {
         case 1:
             VStack {
-                // Picker for player
                 HStack {
                     Text("Choose player to play on: ")
                     Spacer()
                     Picker("Select player:", selection: $pickedPlayer) {
+                        Text("").tag("")
                         ForEach(gameState.getPlayerOptions(for: cardToShow.number), id: \.self) { name in
                             Text(name)
                         }
                     }
                 }
-                // Picker for Card
                 HStack {
                     Text("Pick card to guess:")
                     Spacer()
                     Picker("Select player:", selection: $pickedCard) {
+                        Text("").tag("")
                         ForEach(gameState.getCardOptions(for: cardToShow.number), id: \.self) { card in
                             Text(card)
                         }
@@ -147,15 +151,44 @@ struct PlayCardView: View {
                 }
             }
         case 2, 3, 5, 6:
-            // Picker for player
-            EmptyView()
+            HStack {
+                Text("Choose player to play on: ")
+                Spacer()
+                Picker("Select player:", selection: $pickedPlayer) {
+                    ForEach(gameState.getPlayerOptions(for: cardToShow.number), id: \.self) { name in
+                        Text(name)
+                    }
+                }
+            }
         default:
             EmptyView()
+        }
+    }
+    
+    private func getHeight() -> CGFloat {
+        switch cardToShow.number {
+        case 1:
+            return CGFloat(integerLiteral: 200)
+        case 2, 3, 5, 6:
+            return CGFloat(integerLiteral: 150)
+        default:
+            return CGFloat(integerLiteral: 100)
+        }
+    }
+    
+    private func cardNotAbleToBePlayed() -> Bool {
+        switch cardToShow.number {
+        case 1:
+            return pickedPlayer.isEmpty || pickedCard.isEmpty
+        case 2, 3, 5, 6:
+            return pickedPlayer.isEmpty
+        default:
+            return false
         }
     }
 }
 
 #Preview {
-    PlayCardView(isShowing: .constant(true), cardToShow: Card(number: 1))
+    PlayCardView(isShowing: .constant(true), cardToShow: Card(number: 8))
         .environmentObject(GameState())
 }
