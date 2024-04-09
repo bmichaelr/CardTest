@@ -64,6 +64,7 @@ class GameState: ObservableObject {
     @Published var message: String = ""
     @Published var showCompareCards = false
     @Published var cardsToCompare = [Card]()
+    @Published var showOtherCard = false
     init() {
         if let mePlayer = testPlayers.first(where: { $0.id == myId }) {
             self.me = Player(from: mePlayer)
@@ -121,6 +122,16 @@ class GameState: ObservableObject {
             withAnimation {
                 card.faceDown = false
             }
+        }
+    }
+    
+    func send(card: Card, from hand: Hand, to hand2: Hand) {
+        withAnimation {
+            guard let index = hand.cards.firstIndex(of: card) else {
+                fatalError("oops")
+            }
+            hand.cards.remove(at: index)
+            hand2.cards.append(card)
         }
     }
     

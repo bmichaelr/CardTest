@@ -43,6 +43,7 @@ struct ContentView: View {
             .environmentObject(gameState)
         }
         .compareCards(isPresented: $gameState.showCompareCards, cards: gameState.cardsToCompare)
+        .viewOtherCard(isPresented: $gameState.showOtherCard, card: gameState.cardToShow)
         .showCard(isPresented: $gameState.showCard, show: gameState.cardToShow)
         .showPlayCard(isPresented: $gameState.playCard, show: gameState.cardToShow, game: gameState, myTurn: $gameState.myTurn)
     }
@@ -118,7 +119,15 @@ extension View {
         ZStack {
             self
             if isPresented.wrappedValue {
-                CompareCardView(isShowing: isPresented, cards: cards)
+                CompareCardView(isShowing: isPresented, cards: cards, onTap: {})
+            }
+        }
+    }
+    func viewOtherCard(isPresented: Binding<Bool>, card: Card) -> some View {
+        ZStack {
+            self
+            if isPresented.wrappedValue {
+                ViewSingleCardView(isShowing: isPresented, card: card, onTap: {})
             }
         }
     }

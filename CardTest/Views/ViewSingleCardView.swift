@@ -7,20 +7,19 @@
 
 import SwiftUI
 
-struct CompareCardView: View {
+struct ViewSingleCardView: View {
     @Binding var isShowing: Bool
     @State private var offset: CGFloat = 1000
     @State private var opacity: CGFloat = 0.0
-    var cards = [Card]()
+    var card: Card
+    var onTap: () -> Void
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea(.all).opacity(opacity)
                 .zIndex(1.0)
             VStack {
                 HStack {
-                    ForEach(cards){
-                        buildCompareCardView(card: $0)
-                    }
+                    buildCompareCardView(card: card)
                 }
                 .onTapGesture {
                     close()
@@ -55,7 +54,7 @@ struct CompareCardView: View {
             }
         }
         .foregroundStyle(Color.black)
-        .frame(width: 150, height: 240)
+        .frame(width: 250, height: 400)
         .overlay(RoundedRectangle(cornerRadius: 25).stroke())
         .onAppear {
             withAnimation(.spring()) {
@@ -78,6 +77,7 @@ struct CompareCardView: View {
             }
         }
         .onTapGesture {
+            onTap()
             close()
         }
         .offset(y: offset)
@@ -94,5 +94,7 @@ struct CompareCardView: View {
 }
 
 #Preview {
-    CompareCardView(isShowing: .constant(true), cards: [Card(number: 4),Card(number: 5)])
+    ViewSingleCardView(isShowing: .constant(true), card: Card(number: 5), onTap: {
+        print("syced")
+    })
 }

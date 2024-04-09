@@ -12,6 +12,7 @@ struct CompareCardView: View {
     @State private var offset: CGFloat = 1000
     @State private var opacity: CGFloat = 0.0
     var cards = [Card]()
+    var onTap: () -> Void
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea(.all).opacity(opacity)
@@ -78,6 +79,7 @@ struct CompareCardView: View {
             }
         }
         .onTapGesture {
+            onTap()
             close()
         }
         .offset(y: offset)
@@ -94,5 +96,7 @@ struct CompareCardView: View {
 }
 
 #Preview {
-    CompareCardView(isShowing: .constant(true), cards: [Card(number: 4),Card(number: 5)])
+    CompareCardView(isShowing: .constant(true), cards: [Card(number: 4),Card(number: 5)], onTap: {
+        print("syncing")
+    })
 }
