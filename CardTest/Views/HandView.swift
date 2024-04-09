@@ -83,6 +83,9 @@ struct HandView: View {
             HStack(spacing: -25) {
                 ForEach(hand.cards) { card in
                     CardView(card: card, namespace: namespace, size: .small)
+                        .onTapGesture {
+                            onCardTap(card)
+                        }
                 }
             }
             .fixedSize(horizontal: true, vertical: true)

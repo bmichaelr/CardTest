@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct PlayCardView: View {
-    @EnvironmentObject var gameState: GameState
     @Binding var isShowing: Bool
+    @Binding var isMyTurn: Bool
     @State private var offset: CGFloat = 1000
     @State private var opacity: CGFloat = 0.0
     @State private var playing: Bool = false
     @State private var pickedPlayer: String = ""
     @State private var pickedCard: String = ""
     @Namespace var ns
+    var gameState: GameState
     var cardToShow: Card
     
     var body: some View {
@@ -29,10 +30,13 @@ struct PlayCardView: View {
                 if !playing {
                     buildCardView()
                         .matchedGeometryEffect(id: "card", in: ns)
-                    Button("Play Card") {
-                        withAnimation {
-                            playing.toggle()
+                    if isMyTurn {
+                        Button("Play Card") {
+                            withAnimation {
+                                playing.toggle()
+                            }
                         }
+                        .matchedGeometryEffect(id: "playBtn", in: ns)
                     }
                 } else {
                     buildPlayingView()
@@ -109,13 +113,14 @@ struct PlayCardView: View {
                     Spacer()
                     Button("Play") {
                         if cardNotAbleToBePlayed() { return }
-                        gameState.playCard(player: pickedPlayer, card: pickedCard)
+                        gameState.playCard(player: pickedPlayer, card: pickedCard, play: cardToShow)
                         withAnimation {
                             playing = false
                         } completion: {
                             close()
                         }
                     }
+                    .matchedGeometryEffect(id: "playBtn", in: ns)
                 }
             }
             .padding()
@@ -134,18 +139,18 @@ struct PlayCardView: View {
                     Spacer()
                     Picker("Select player:", selection: $pickedPlayer) {
                         Text("").tag("")
-                        ForEach(gameState.getPlayerOptions(for: cardToShow.number), id: \.self) { name in
-                            Text(name)
+                        ForEach(gameState.getPlayerOptions(for: cardToShow.number), id: \.self) { player in
+                            Text(player)
                         }
                     }
                 }
                 HStack {
                     Text("Pick card to guess:")
                     Spacer()
-                    Picker("Select player:", selection: $pickedCard) {
+                    Picker("Select card:", selection: $pickedCard) {
                         Text("").tag("")
                         ForEach(gameState.getCardOptions(for: cardToShow.number), id: \.self) { card in
-                            Text(card)
+                            Text(card).tag(card)
                         }
                     }
                 }
@@ -155,8 +160,9 @@ struct PlayCardView: View {
                 Text("Choose player to play on: ")
                 Spacer()
                 Picker("Select player:", selection: $pickedPlayer) {
-                    ForEach(gameState.getPlayerOptions(for: cardToShow.number), id: \.self) { name in
-                        Text(name)
+                    Text("").tag("")
+                    ForEach(gameState.getPlayerOptions(for: cardToShow.number), id: \.self) { player in
+                        Text(player)
                     }
                 }
             }
@@ -189,6 +195,6 @@ struct PlayCardView: View {
 }
 
 #Preview {
-    PlayCardView(isShowing: .constant(true), cardToShow: Card(number: 8))
+    PlayCardView(isShowing: .constant(true), isMyTurn: .constant(false), gameState: GameState(), cardToShow: Card(number: 1))
         .environmentObject(GameState())
 }

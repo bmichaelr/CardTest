@@ -55,6 +55,8 @@ class GameState: ObservableObject {
     @Published var deck = Hand()
     @Published var myId = player1.id
     @Published var showCard: Bool = false
+    @Published var playCard: Bool = false
+    @Published var myTurn: Bool = false
     @Published var cardToShow: Card = Card(number: 5)
     
     init() {
@@ -181,6 +183,11 @@ class GameState: ObservableObject {
         showCard = true
     }
     
+    func playCard(card: Card) {
+        cardToShow = card
+        playCard = true
+    }
+    
     func getPlayerOptions(for card: Int) -> [String] {
         var options = [String]()
         for player in players {
@@ -195,11 +202,22 @@ class GameState: ObservableObject {
     }
     
     func getCardOptions(for power: Int) -> [String] {
-        return ["Maul Rat", "Duck of Doom", "Wishing Ring", "Net Troll", "Dread Gazebo", "Turbonium Dragon", "Loot"]
+        var options = [String]()
+        options.append(contentsOf: [
+            "Maul Rat",
+            "Duck of Doom",
+            "Wishing Ring",
+            "Net Troll",
+            "Dread Gazebo",
+            "Turbonium Dragon",
+            "Loot"
+        ])
+        return options
     }
     
-    func playCard(player: String?, card: String?) {
-        print("Chosen player: \(player ?? "No Player Selected!"), Chose card: \(card ?? "No Card Chosen")")
+    func playCard(player: String? = nil, card: String? = nil, play: Card) {
+        print("Playing card: \(play.number)")
+        print("Chosen player: \(player ?? "No player chosen"), Chose card: \(card ?? "No card chosen")")
         
     }
 }

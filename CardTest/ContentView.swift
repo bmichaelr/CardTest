@@ -42,8 +42,9 @@ struct ContentView: View {
             }
             .environmentObject(gameState)
         }
-        // .showCard(isPresented: $gameState.showCard, show: gameState.cardToShow)
         .compareCards(isPresented: $gameState.showCard, compare: gameState.cardToShow, to: gameState.cardToShow)
+        .showCard(isPresented: $gameState.showCard, show: gameState.cardToShow)
+        .showPlayCard(isPresented: $gameState.playCard, show: gameState.cardToShow, game: gameState, myTurn: $gameState.myTurn)
     }
     
     @ViewBuilder
@@ -76,16 +77,14 @@ struct ContentView: View {
                     player: player,
                     isMe: true,
                     namespace: animation,
-                    onCardTap: { gameState.remove(card: $0, from: player.getHand(type: .discard))},
+                    onCardTap: { gameState.showCard(card: $0) },
                     cardSize: .small)
             HandView(
                 hand: player.getHand(type: .holding), 
                 player: player,
                 isMe: true,
                 namespace: animation,
-                onCardTap: {
-                    gameState.discard(card: $0, from: player.getHand(type: .holding), to: player.getHand(type: .discard))
-                },
+                onCardTap: { gameState.playCard(card: $0) },
                 cardSize: .large
             )
         }
@@ -120,6 +119,17 @@ extension View {
             self
             if isPresented.wrappedValue {
                 CompareCardView(isShowing: isPresented, card1: card, card2: card2)
+            }
+        }
+    }
+}
+
+extension View {
+    func showPlayCard(isPresented: Binding<Bool>, show card: Card, game: GameState, myTurn: Binding<Bool>) -> some View {
+        ZStack {
+            self
+            if isPresented.wrappedValue {
+                PlayCardView(isShowing: isPresented, isMyTurn: myTurn, gameState: game, cardToShow: card)
             }
         }
     }
