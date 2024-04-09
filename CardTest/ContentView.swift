@@ -42,7 +42,7 @@ struct ContentView: View {
             }
             .environmentObject(gameState)
         }
-        .compareCards(isPresented: $gameState.showCard, compare: gameState.cardToShow, to: gameState.cardToShow)
+        //.compareCards(isPresented: $gameState.showCard, compare: gameState.cardToShow, to: gameState.cardToShow)
         .showCard(isPresented: $gameState.showCard, show: gameState.cardToShow)
         .showPlayCard(isPresented: $gameState.playCard, show: gameState.cardToShow, game: gameState, myTurn: $gameState.myTurn)
     }
@@ -114,14 +114,14 @@ extension View {
             }
         }
     }
-    func compareCards(isPresented: Binding<Bool>, compare card: Card, to card2: Card) -> some View {
-        ZStack {
-            self
-            if isPresented.wrappedValue {
-                CompareCardView(isShowing: isPresented, card1: card, card2: card2)
-            }
-        }
-    }
+//    func compareCards(isPresented: Binding<Bool>, compare card: Card, to card2: Card) -> some View {
+//        ZStack {
+//            self
+//            if isPresented.wrappedValue {
+//                CompareCardView(isShowing: isPresented, card1: card, card2: card2)
+//            }
+//        }
+//    }
 }
 
 extension View {
