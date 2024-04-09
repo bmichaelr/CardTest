@@ -17,9 +17,9 @@ struct GamePlayer {
 }
 
 let player1: GamePlayer = GamePlayer(name: "Ben", id: UUID(), isOut: false, isSafe: true, isHost: false)
-let player2: GamePlayer = GamePlayer(name: "Josh", id: UUID(), isOut: true, isSafe: false, isHost: false)
-let player3: GamePlayer = GamePlayer(name: "Caleb", id: UUID(), isOut: false, isSafe: false, isHost: false)
-let player4: GamePlayer = GamePlayer(name: "John", id: UUID(), isOut: false, isSafe: false, isHost: false)
+let player2: GamePlayer = GamePlayer(name: "Josh", id: UUID(), isOut: false, isSafe: true, isHost: false)
+let player3: GamePlayer = GamePlayer(name: "Caleb", id: UUID(), isOut: true, isSafe: false, isHost: false)
+let player4: GamePlayer = GamePlayer(name: "John", id: UUID(), isOut: false, isSafe: true, isHost: false)
 
 let testPlayers: [GamePlayer] = [player1, player2, player3, player4]
 
@@ -40,6 +40,9 @@ class Card: ObservableObject, Identifiable, Equatable {
     init(number: Int) {
         self.number = number
     }
+    init(from card: String) {
+        self.number = 0
+    }
 }
 
 // A representation of a player's hand of cards
@@ -58,6 +61,7 @@ class GameState: ObservableObject {
     @Published var playCard: Bool = false
     @Published var myTurn: Bool = false
     @Published var cardToShow: Card = Card(number: 5)
+    @Published var message: String = ""
     
     init() {
         if let mePlayer = testPlayers.first(where: { $0.id == myId }) {
@@ -70,7 +74,8 @@ class GameState: ObservableObject {
             .filter { $0.id != myId }
             .map { Player(from: $0) }
         
-        self.deck.cards = (1...20).map { Card(number: $0) }.shuffled()
+        self.deck.cards.append(Card(number: 0))
+        self.deck.cards.append(Card(number: 0))
     }
     
     
@@ -215,10 +220,61 @@ class GameState: ObservableObject {
         return options
     }
     
-    func playCard(player: String? = nil, card: String? = nil, play: Card) {
-        print("Playing card: \(play.number)")
-        print("Chosen player: \(player ?? "No player chosen"), Chose card: \(card ?? "No card chosen")")
+    func playCard(player playerName: String, card cardName: String, play card: Card) {
+        print("Playing card: \(card.number)")
         
+        if playerName.isNotEmpty() {
+            if cardName.isNotEmpty() {
+                playGuessingCard(playerName, cardName, card)
+            } else {
+                playTargetedCard(playerName, card)
+            }
+        }
+        
+    }
+    
+    private func playGuessingCard(_ playerName: String, _ cardName: String, _ card: Card) {
+        guard let player = getPlayerFromName(playerName) else {
+            print("Unable to find player from given name!")
+            return
+        }
+        guard let power = getCardNumberFromName(cardName) else {
+            print("Unable to find card from given name!")
+            return
+        }
+        // TODO: build the card payload and send
+        print("Playing a guessing card (\(card.number): On player -> (\(player.name)), Guessing card -> (\(power))")
+    }
+    private func playTargetedCard(_ playerName: String, _ card: Card) {
+        guard let player = getPlayerFromName(playerName) else {
+            print("Unable to find player from given name!")
+            return
+        }
+        // TODO: build card payload and send
+        print("Playing a targeted card (\(card.number)): On player -> (\(player.name))")
+    }
+    
+    private func getCardNumberFromName(_ name: String) -> Int? {
+        switch name {
+        case "Maul Rat": return 2
+        case "Duck of Doom": return 3
+        case "Wishing Ring": return 4
+        case "Net Troll" : return 5
+        case "Dread Gazebo": return 6
+        case "Turbonium Dragon": return 7
+        case "Loot": return 8
+        default: return nil
+        }
+    }
+    
+    private func getPlayerFromName(_ name: String) -> Player? {
+        if me!.name == name {
+            return me!
+        }
+        guard let player = players.first(where: { $0.name == name }) else {
+            return nil
+        }
+        return player
     }
 }
 
@@ -250,3 +306,8 @@ class Player: ObservableObject, Identifiable {
     }
 }
 
+extension String {
+    func isNotEmpty() -> Bool {
+        return !self.isEmpty
+    }
+}
