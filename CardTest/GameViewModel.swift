@@ -62,7 +62,8 @@ class GameState: ObservableObject {
     @Published var myTurn: Bool = false
     @Published var cardToShow: Card = Card(number: 5)
     @Published var message: String = ""
-    
+    @Published var showCompareCards = false
+    @Published var cardsToCompare = [Card]()
     init() {
         if let mePlayer = testPlayers.first(where: { $0.id == myId }) {
             self.me = Player(from: mePlayer)
