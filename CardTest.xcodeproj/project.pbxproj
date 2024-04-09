@@ -18,6 +18,7 @@
 		0F16AC9C2BC304AD005CACE6 /* ShowCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F16AC9B2BC304AD005CACE6 /* ShowCardView.swift */; };
 		0F16AC9E2BC309A6005CACE6 /* PlayCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F16AC9D2BC309A6005CACE6 /* PlayCardView.swift */; };
 		32B9CBB52BC59A7C0031B563 /* CompareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B9CBB42BC59A7C0031B563 /* CompareCardView.swift */; };
+		33BBBA4E2BC5ACC8001DEFFF /* ViewSingleCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33BBBA4D2BC5ACC8001DEFFF /* ViewSingleCardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		0F16AC9B2BC304AD005CACE6 /* ShowCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowCardView.swift; sourceTree = "<group>"; };
 		0F16AC9D2BC309A6005CACE6 /* PlayCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayCardView.swift; sourceTree = "<group>"; };
 		32B9CBB42BC59A7C0031B563 /* CompareCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompareCardView.swift; sourceTree = "<group>"; };
+		33BBBA4D2BC5ACC8001DEFFF /* ViewSingleCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewSingleCardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				32B9CBB42BC59A7C0031B563 /* CompareCardView.swift */,
+				33BBBA4D2BC5ACC8001DEFFF /* ViewSingleCardView.swift */,
 				0F16AC8F2BC1C8C1005CACE6 /* CardView.swift */,
 				0F16AC932BC1C91A005CACE6 /* DeckView.swift */,
 				0F16AC952BC1C923005CACE6 /* HandView.swift */,
@@ -174,6 +177,7 @@
 				0F16AC922BC1C8EA005CACE6 /* GameViewModel.swift in Sources */,
 				0F16AC902BC1C8C1005CACE6 /* CardView.swift in Sources */,
 				0F16AC942BC1C91A005CACE6 /* DeckView.swift in Sources */,
+				33BBBA4E2BC5ACC8001DEFFF /* ViewSingleCardView.swift in Sources */,
 				0F16AC9E2BC309A6005CACE6 /* PlayCardView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
