@@ -161,39 +161,19 @@ class GameState: ObservableObject {
     }
     
     func cleanUpCards() {
-        withAnimation {
-            func cleanUpNextPlayer(index: Int) {
-                guard index < players.count else { return }
-                let player = players[index]
-                for (index, card) in player.hands[0].cards.enumerated() {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.25) {
-                        self.remove(card: card, from: player.hands[0])
-                    }
-                }
-                for (index, card) in player.hands[1].cards.enumerated() {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.25) {
-                        self.remove(card: card, from: player.hands[1])
-                    }
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + Double(player.hands[0].cards.count + player.hands[1].cards.count) * 0.25) {
-                    cleanUpNextPlayer(index: index + 1)
-                }
-            }
-            cleanUpNextPlayer(index: 0)
-        }
-        
-        withAnimation {
-            for (_, card) in me!.hands[0].cards.enumerated() {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.remove(card: card, from: self.me!.hands[0])
-                }
-            }
-            for (_, card) in me!.hands[1].cards.enumerated() {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.remove(card: card, from: self.me!.hands[1])
+        for player in players {
+            for hand in player.hands {
+                for card in hand.cards {
+                    remove(card: card, from: hand)
                 }
             }
         }
+        for hand in me!.hands {
+            for card in hand.cards {
+                remove(card: card, from: hand)
+            }
+        }
+        deck.cards.append(Card(number: 0))
     }
     
     func showCard(card: Card) {
