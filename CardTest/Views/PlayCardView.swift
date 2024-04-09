@@ -195,6 +195,6 @@ struct PlayCardView: View {
 }
 
 #Preview {
-    PlayCardView(isShowing: .constant(true), isMyTurn: .constant(false), gameState: GameState(), cardToShow: Card(number: 1))
+    PlayCardView(isShowing: .constant(true), isMyTurn: .constant(true), gameState: GameState(), cardToShow: Card(number: 5))
         .environmentObject(GameState())
 }

@@ -17,7 +17,7 @@ struct DeckView: View {
             // Just need to draw the last two so that the transition of card
             // from the hand back to the deck results in the old top card being
             // rendered as the new top card animates in
-            ForEach(deck.cards.suffix(2)) {
+            ForEach(deck.cards.suffix(1)) {
                 CardView(card: $0, namespace: namespace, size: .small)
             }
         }
